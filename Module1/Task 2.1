@@ -1,0 +1,25 @@
+const int MOTION_PIN = 2; 
+const int LED_PIN = 4;
+
+volatile int motionState = LOW;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(MOTION_PIN, INPUT);
+  pinMode(LED_PIN, OUTPUT);
+  attachInterrupt(digitalPinToInterrupt(MOTION_PIN), motionDetected, CHANGE); // Trigger interrupt on any change (HIGH to LOW or LOW to HIGH)
+}
+
+void loop() {
+}
+
+void motionDetected() {
+  motionState = digitalRead(MOTION_PIN);
+  if (motionState == HIGH) {
+    Serial.println("Motion on, light on");
+    digitalWrite(LED_PIN, HIGH);
+  } else {
+    Serial.println("Motion off, light off");
+    digitalWrite(LED_PIN, LOW);
+  }
+}
