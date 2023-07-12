@@ -1,0 +1,24 @@
+const int MOTION_PIN = 5;   
+const int LED_PIN           = 4;   
+int motionStateCurrent      = LOW; 
+int motionStatePrevious     = LOW; 
+void setup() {
+  Serial.begin(9600);                
+  pinMode(MOTION_PIN, INPUT); 
+  pinMode(LED_PIN, OUTPUT);          
+}
+
+void loop() {
+  motionStatePrevious = motionStateCurrent;             
+  motionStateCurrent  = digitalRead(MOTION_PIN); 
+
+  if (motionStatePrevious == LOW && motionStateCurrent == HIGH) { 
+    Serial.println("Motion on, light on");
+    digitalWrite(LED_PIN, HIGH); 
+  }
+  else
+  if (motionStatePrevious == HIGH && motionStateCurrent == LOW) { 
+    Serial.println("Motion off, light off");
+    digitalWrite(LED_PIN, LOW);  
+  }
+}
