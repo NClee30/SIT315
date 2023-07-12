@@ -7,7 +7,7 @@ void setup() {
   Serial.begin(9600);
   pinMode(MOTION_PIN, INPUT);
   pinMode(LED_PIN, OUTPUT);
-  attachInterrupt(digitalPinToInterrupt(MOTION_PIN), motionDetected, CHANGE); // Trigger interrupt on any change (HIGH to LOW or LOW to HIGH)
+  attachInterrupt(digitalPinToInterrupt(MOTION_PIN), motionDetected, CHANGE);
 }
 
 void loop() {
