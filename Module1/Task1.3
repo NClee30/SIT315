@@ -1,0 +1,45 @@
+const int MOTION_PIN = 2; 
+const int G_LED_PIN = 7;
+
+const int Button_PIN = 3; 
+const int R_LED_PIN = 6;
+
+volatile int motionState = LOW;
+volatile int R_LED_STATE = LOW;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(MOTION_PIN, INPUT);
+  pinMode(G_LED_PIN, OUTPUT);
+  attachInterrupt(digitalPinToInterrupt(MOTION_PIN), motionDetected, CHANGE);
+  pinMode(Button_PIN, INPUT);
+  pinMode(R_LED_PIN, OUTPUT);
+  attachInterrupt(digitalPinToInterrupt(Button_PIN), ButtonChange, FALLING);
+}
+
+void loop() {
+}
+
+void motionDetected() {
+  motionState = digitalRead(MOTION_PIN);
+  if (motionState == HIGH) {
+    Serial.println("Motion on, green light on");
+    digitalWrite(G_LED_PIN, HIGH);
+  } else {
+    Serial.println("Motion off, green light off");
+    digitalWrite(G_LED_PIN, LOW);
+  }
+}
+
+
+void ButtonChange() {
+  R_LED_STATE = digitalRead(R_LED_PIN);
+  if (R_LED_STATE == LOW) {
+    Serial.println("Botton Change, red light on");
+    digitalWrite(R_LED_PIN, HIGH);
+  } else {
+    Serial.println("Botton Change, red light off");
+    digitalWrite(R_LED_PIN, LOW);
+  }
+}
+
