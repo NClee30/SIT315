@@ -1,0 +1,100 @@
+#define MOTION_PIN 2
+#define G_LED_PIN 7
+
+#define Button_PIN 4
+#define R_LED_PIN 6
+
+#define Switch_PIN 3
+#define B_LED_PIN 5
+
+#define O_LED_PIN 8
+
+bool motionState = LOW;
+bool ButtonState = LOW;
+bool SwitchState = LOW;
+bool LedState = LOW;
+
+void setup() {
+  Serial.begin(9600);
+  
+  pinMode(O_LED_PIN, OUTPUT);
+  
+  pinMode(MOTION_PIN, INPUT);
+  pinMode(G_LED_PIN, OUTPUT);
+  
+  pinMode(Button_PIN, INPUT);
+  pinMode(R_LED_PIN, OUTPUT);
+  
+  pinMode(Switch_PIN, INPUT);
+  pinMode(B_LED_PIN, OUTPUT);
+
+  PCICR |= (1 << PCIE2);
+
+  PCMSK2 |= (1 << PCINT20);
+  
+  attachInterrupt(digitalPinToInterrupt(MOTION_PIN), motionDetected, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(Switch_PIN), SwitchChange, CHANGE);
+  
+  PCICR |= (1 << PCIE2);
+
+  PCMSK2 |= (1 << PCINT18) | (1 << PCINT19) | (1 << PCINT20);
+
+  noInterrupts();          
+  TCCR1A = 0;
+  TCCR1B = 0;
+
+  uint16_t timer1_counter = 64286;
+
+  TCNT1 = timer1_counter;  
+  TCCR1B |= (1 << CS12) | (1 << CS10);  
+  TIMSK1 |= (1 << TOIE1);  
+  interrupts();             
+}
+
+void loop() {
+}
+
+void motionDetected() {
+  motionState = !motionState; 
+  if (motionState) {
+    Serial.println("Motion on, green light on");
+    digitalWrite(G_LED_PIN, HIGH);
+  } else {
+    Serial.println("Motion off, green light off");
+    digitalWrite(G_LED_PIN, LOW);
+  }
+}
+  
+void SwitchChange() {
+  SwitchState = !SwitchState;
+  if (SwitchState) {
+    Serial.println("Switch moved, Blue light on");
+    digitalWrite(B_LED_PIN, HIGH);
+  } else {
+    Serial.println("Switch moved, Blue light off");
+    digitalWrite(B_LED_PIN, LOW);
+  }
+}
+
+ISR(PCINT2_vect) {
+  if(PIND & (1 << PIND4)) {
+  	ButtonState = !ButtonState;
+    if (ButtonState) {
+      Serial.println("Button Change, red light on");
+      digitalWrite(R_LED_PIN, HIGH);
+    } else {
+      Serial.println("Button Change, red light off");
+      digitalWrite(R_LED_PIN, LOW);
+    }
+  }
+}
+
+ISR(TIMER1_OVF_vect) {
+  TCNT1 = 642860;   
+  LedState = !LedState;
+  Serial.println("Timer");
+  digitalWrite(O_LED_PIN, LedState); 
+}
+    
+
+
